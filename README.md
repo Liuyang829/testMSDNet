@@ -1,5 +1,7 @@
 # MSDNet-PyTorch
 
+Just for learning only and make some notes
+
 This repository contains the PyTorch implementation of the paper [Multi-Scale Dense Networks for Resource Efficient Image Classification](https://arxiv.org/pdf/1703.09844.pdf)
 
 Citation:
