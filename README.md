@@ -1,6 +1,7 @@
 # MSDNet-PyTorch
 
-Just for learning only and make some notes
+Just for personal learning only and make some notes especially in adaptive_inference.
+Thanks Huang,G. et al. for this great work which helps me a lot.
 
 This repository contains the PyTorch implementation of the paper [Multi-Scale Dense Networks for Resource Efficient Image Classification](https://arxiv.org/pdf/1703.09844.pdf)
 
@@ -19,6 +20,8 @@ Citation:
 + PyTorch >= 0.4.0
 
 ## Network Configurations
+
++ In CIFAR-100 training period, the difference between *anytime prediction* and *efficient batch computation* is *stepmode*, just where the classifiers operate on.
 
 #### Train an MSDNet (block=7) on CIFAR-100 for *anytime prediction*: 
 
@@ -52,6 +55,9 @@ python3 main.py --data-root /PATH/TO/ImageNet --data ImageNet --save /PATH/TO/SA
 ## Pre-trained MSDNet Models on ImageNet
 1. [Download](https://www.dropbox.com/sh/7p758wfcq4wm6lf/AACU4hFtV1_4UQavexrsSs1Ba?dl=0) pretrained models and validation indeces on ImageNet.
 2. Test script:
+
++ In testing period, the difference between *anytime prediction* and *efficient batch computation* is *evalmode*.
+
 ```
 python3 main.py --data-root /PATH/TO/ImageNet --data ImageNet --save /PATH/TO/SAVE \
                 --arch msdnet --batch-size 256 --epochs 90 --nBlocks 5 \

@@ -106,4 +106,9 @@ ENV/
 # result files
 results/*
 
+testdata.py
+testdraw.py
+testdraw3.py
+testdraw_imagenet_anytime.py
+
 .DS_Store
