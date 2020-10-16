@@ -16,7 +16,7 @@ class ConvBasic(nn.Module):
             nn.BatchNorm2d(nOut),
             nn.ReLU(True)
         )
-
+    # x为输入
     def forward(self, x):
         return self.net(x)
 
@@ -72,7 +72,10 @@ class ConvDownNormal(nn.Module):
                                 bottleneck, bnWidth1)
         self.conv_normal = ConvBN(nIn2, nOut // 2, 'normal',
                                   bottleneck, bnWidth2)
-
+    # 传过来的数据为相当于来自两个tensor分别处理左上角和左侧的卷积所以要分x[0] x[1]来处理
+    # x[1]来自原本左侧的feature map conv_normal代表这一层的常规卷积 conv_down就是左上角传下来的特殊卷积
+    # 将前一层传过来的和本层生成的进行concate  符合densenet操作
+    # 再用concat将这个list中的
     def forward(self, x):
         res = [x[1],
                self.conv_down(x[0]),
@@ -87,6 +90,7 @@ class ConvNormal(nn.Module):
                                   bottleneck, bnWidth)
 
     def forward(self, x):
+        # 如果x不是list，则变成list，其实x中只有一个tensor 放进list中cat
         if not isinstance(x, list):
             x = [x]
         res = [x[0],
@@ -124,7 +128,7 @@ class MSDNFirstLayer(nn.Module):
         print(self.layers)
 
     def forward(self, x):
-        # 将每一个的张量组成一个列表 res为一个长度为3的list
+        # 将输入x分别经过每一层的处理之后所生成的张量放进list中每一个的张量
         res = []
         for i in range(len(self.layers)):
             x = self.layers[i](x)
@@ -185,12 +189,14 @@ class MSDNLayer(nn.Module):
             for i in range(1, self.outScales + 1):
                 inp.append([x[i - 1], x[i]])
         else:
+            # 假设scale=3并且左右不变，inp=[[x[0]], [x[0],x[1]], [x[1],x[2]]]
             inp = [[x[0]]]
             for i in range(1, self.outScales):
                 inp.append([x[i - 1], x[i]])
         # print(".............................")
         # print(inp)
         # print(".............................")
+        # 给每个层分别的输入
         res = []
         for i in range(self.outScales):
             res.append(self.layers[i](inp[i]))
@@ -221,6 +227,7 @@ class ParallelModule(nn.Module):
 class ClassifierModule(nn.Module):
     def __init__(self, m, channel, num_classes):
         super(ClassifierModule, self).__init__()
+        # m代表放在分类器前的几层
         self.m = m
         self.linear = nn.Linear(channel, num_classes)
         print("======================classifier====================")
@@ -229,7 +236,9 @@ class ClassifierModule(nn.Module):
         print("=====================================================")
 
     def forward(self, x):
+        # -1是代表最下面一个scale的x
         res = self.m(x[-1])
+        # 在第0个维度上展开为一维向量
         res = res.view(res.size(0), -1)
         return self.linear(res)
 
